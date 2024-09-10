@@ -13,7 +13,7 @@ from .models import Model
 from .priors import Prior
 from . import interpret
 
-__version__ = version("bambi")
+#__version__ = version("bambi")
 
 __all__ = [
     "Model",

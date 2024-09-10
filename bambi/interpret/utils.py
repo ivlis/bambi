@@ -220,7 +220,7 @@ def get_model_terms(model: Model) -> dict:
     terms = {}
     for component in model.distributional_components.values():
         if component.design.common:
-            terms.update(component.design.common.terms)
+            terms.update({t for t in component.design.common.terms.items() if t[1].kind != "offset"})
 
         if component.design.group:
             terms.update(component.design.group.terms)

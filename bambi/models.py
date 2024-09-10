@@ -32,7 +32,7 @@ _log = logging.getLogger("bambi")
 
 ORDINAL_FAMILIES = (univariate.Cumulative, univariate.StoppingRatio)
 
-__version__ = version("bambi")
+__version__ = "dev" #version("bambi")
 
 
 class Model:

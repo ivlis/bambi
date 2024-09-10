@@ -26,6 +26,7 @@ SUPPORTED_SLOPES = ("dydx", "eyex")
 SUPPORTED_COMPARISONS = {
     "diff": lambda x, y: x - y,
     "ratio": lambda x, y: x / y,
+    "rel_diff": lambda x, y: (x - y) / y,
 }
 
 
@@ -435,6 +436,7 @@ def predictions(
     idata: az.InferenceData,
     conditional: Union[str, dict, list, None] = None,
     average_by: Union[str, list, bool, None] = None,
+    offset = None,
     target: str = "mean",
     pps: bool = False,
     use_hdi: bool = True,
@@ -508,6 +510,10 @@ def predictions(
         raise ValueError(f"'prob' must be greater than 0 and smaller than 1. It is {prob}.")
 
     cap_data = create_predictions_data(conditional_info)
+
+    if offset is not None:
+        offset_variable, offset_value = next(iter(offset.items()))
+        cap_data[offset_variable] = offset_value
 
     if target != "mean":
         component = model.components[target]
@@ -589,6 +595,7 @@ def comparisons(
     contrast: Union[str, dict],
     conditional: Union[str, dict, list, None] = None,
     average_by: Union[str, list, bool, None] = None,
+    offset: dict = None,
     comparison_type: str = "diff",
     use_hdi: bool = True,
     prob: Union[float, None] = None,
@@ -676,7 +683,8 @@ def comparisons(
                     f"{contrast_name} has {num_levels} unique values."
                 )
 
-    if comparison_type not in ("diff", "ratio"):
+    if comparison_type not in list(SUPPORTED_COMPARISONS.keys()):
+        print(list(SUPPORTED_COMPARISONS.keys()))
         raise ValueError("'comparison_type' must be 'diff' or 'ratio'")
 
     if prob is None:
@@ -704,6 +712,11 @@ def comparisons(
     comparisons_data = create_differences_data(
         conditional_info, contrast_info, effect_type="comparisons"
     )
+
+    if offset is not None:
+        offset_variable, offset_value = next(iter(offset.items()))
+        comparisons_data[offset_variable] = offset_value
+        
     idata = model.predict(
         idata, data=comparisons_data, sample_new_groups=sample_new_groups, inplace=False
     )

@@ -28,7 +28,7 @@ from bambi.utils import get_aliased_name
 _log = logging.getLogger("bambi")
 
 
-__version__ = version("bambi")
+__version__ = 'dev' #version("bambi")
 
 
 class PyMCModel:
